@@ -9,12 +9,11 @@ bot = telebot.TeleBot(config.token)
 @bot.message_handler(func=lambda message: True, content_types=['text'])
 def send_message(message):
     print(message.reply_to_message)
-    global on
-    if on:
-        if check_reply(message):
-            reply(message)
-        elif to_say():
-            say(message)
+    if check_reply(message):
+        reply(message)
+    elif to_say():
+        say(message)
+
 
 def check_reply(message):
     if message.reply_to_message and message.reply_to_message.from_user.username == 'Rei_Ayanami_2017_bot':
