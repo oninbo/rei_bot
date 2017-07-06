@@ -15,6 +15,7 @@ def send_message(message):
         say(message)
 
 
+
 def check_reply(message):
     if message.reply_to_message and message.reply_to_message.from_user.username == 'Rei_Ayanami_2017_bot':
         return True
