@@ -5,15 +5,18 @@ import random
 
 bot = telebot.TeleBot(config.token)
 
+messages_handled = 0
+
 
 @bot.message_handler(func=lambda message: True, content_types=['text', 'sticker', 'photo'])
 def send_message(message):
-    print(message)
+    global messages_handled
+    messages_handled += 1
+    print(message.text)
     if check_reply(message):
         reply(message)
     elif to_say():
         say(message)
-
 
 
 def check_reply(message):
@@ -22,9 +25,12 @@ def check_reply(message):
 
 
 def to_say():
-    r = random.randint(1, 1000)
-    if r <= 200:
-        return True
+    global messages_handled
+    if messages_handled >= 10:
+        messages_handled = 0
+        r = random.randint(1, 1000)
+        if r <= 200:
+            return True
 
 
 def say(message):
