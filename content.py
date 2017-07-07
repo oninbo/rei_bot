@@ -42,5 +42,5 @@ messages = [
     Message("text", "Кто ты? Кто ты? Кто ты?"),
     Message("text", "Кто ты? Кто ты? Кто ты?"),
     Message("text", "Кто ты?"),
+    Message("text", "Икари-кун, где ты?"),
 ]
-

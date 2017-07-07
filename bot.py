@@ -36,11 +36,20 @@ def to_say():
 
 
 def say(message):
-    bot.send_message(message.chat.id, content.messages[random.randint(0, len(content.messages)-1)].value)
+    bot.send_message(message.chat.id, get_phrase())
 
 
 def reply(message):
-    bot.send_message(message.chat.id, content.messages[random.randint(0, len(content.messages) - 1)].value, reply_to_message_id=message.message_id)
+    bot.send_message(message.chat.id, get_phrase(), reply_to_message_id=message.message_id)
+
+
+def get_phrase():
+    return content.messages[random.randint(0, len(content.messages)-1)].value
+
+
+@bot.message_handler(commands=['alive'])
+def ping(message):
+    reply(message)
 
 
 if __name__ == '__main__':
