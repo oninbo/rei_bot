@@ -9,6 +9,11 @@ messages_handled = 0
 messages_range = 10
 
 
+@bot.message_handler(commands=['alive'])
+def ping(message):
+    reply(message)
+
+
 @bot.message_handler(func=lambda message: True, content_types=['text', 'sticker', 'photo'])
 def send_message(message):
     global messages_handled
@@ -47,9 +52,6 @@ def get_phrase():
     return content.messages[random.randint(0, len(content.messages)-1)].value
 
 
-@bot.message_handler(commands=['alive'])
-def ping(message):
-    reply(message)
 
 
 if __name__ == '__main__':
