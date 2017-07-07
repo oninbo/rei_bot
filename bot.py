@@ -6,9 +6,9 @@ import random
 bot = telebot.TeleBot(config.token)
 
 
-@bot.message_handler(func=lambda message: True, content_types=['text'])
+@bot.message_handler(func=lambda message: True, content_types=['text', 'sticker', 'photo'])
 def send_message(message):
-    print(message.reply_to_message)
+    print(message)
     if check_reply(message):
         reply(message)
     elif to_say():
