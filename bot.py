@@ -9,9 +9,13 @@ messages_handled = 0
 messages_range = 10
 
 
-@bot.message_handler(commands=['alive'])
+@bot.message_handler(commands=['ask'])
 def ping(message):
-    reply(message)
+    print(message)
+    if "@Rei_Ayanami_2017_bot" in message.text:
+        reply(message, text=content.messages[-2].value)
+    else:
+        reply(message)
 
 
 @bot.message_handler(func=lambda message: True, content_types=['text', 'sticker', 'photo'])
@@ -44,8 +48,11 @@ def say(message):
     bot.send_message(message.chat.id, get_phrase())
 
 
-def reply(message):
-    bot.send_message(message.chat.id, get_phrase(), reply_to_message_id=message.message_id)
+def reply(message, text=None):
+    if text:
+        bot.send_message(message.chat.id, text, reply_to_message_id=message.message_id)
+    else:
+        bot.send_message(message.chat.id, get_phrase(), reply_to_message_id=message.message_id)
 
 
 def get_phrase():
