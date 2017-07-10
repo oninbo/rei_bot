@@ -6,7 +6,7 @@ import random
 
 bot = telebot.TeleBot(config.token)
 
-messages_handled = 0
+messages_handled = {}
 messages_range = 10
 
 
@@ -24,14 +24,18 @@ def ping(message):
 
 @bot.message_handler(func=lambda message: True, content_types=['text', 'sticker', 'photo'])
 def send_message(message):
+    chat_id = message.chat.id
     global messages_handled
-    messages_handled += 1
-    print(message.chat.type)
+    if chat_id not in messages_handled:
+        messages_handled[chat_id] = 0
+    else:
+        messages_handled[chat_id] += 1
+    print(message.chat)
     if message.chat.type == 'private':
         say(message)
     elif check_reply(message):
         reply(message)
-    if to_say(messages_handled/100*2):
+    if to_say(messages_handled[chat_id]/100*2, chat_id):
         say(message)
 
 
@@ -40,9 +44,9 @@ def check_reply(message):
         return True
 
 
-def to_say(probability):
+def to_say(probability, chat_id):
     global messages_handled, messages_range
-    if messages_handled >= messages_range:
+    if messages_handled[chat_id] >= messages_range:
         messages_handled = 0
         random.seed(int(time.time()))
     r = random.randint(1, 1000)
