@@ -25,8 +25,10 @@ def ping(message):
 def send_message(message):
     global messages_handled
     messages_handled += 1
-    #print(message.text)
-    if check_reply(message):
+    print(message.chat.type)
+    if message.chat.type == 'private':
+        say(message)
+    elif check_reply(message):
         reply(message)
     elif to_say():
         say(message)
