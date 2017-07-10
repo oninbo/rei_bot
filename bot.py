@@ -9,13 +9,16 @@ messages_handled = 0
 messages_range = 10
 
 
+@bot.message_handler(commands=['start'])
+def ping(message):
+    #print(message)
+    say(message)
+
+
 @bot.message_handler(commands=['ask'])
 def ping(message):
-    print(message)
-    if "@Rei_Ayanami_2017_bot" in message.text:
-        reply(message, text=content.messages[-2].value)
-    else:
-        reply(message)
+    #print(message)
+    reply(message)
 
 
 @bot.message_handler(func=lambda message: True, content_types=['text', 'sticker', 'photo'])
