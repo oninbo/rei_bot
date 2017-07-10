@@ -1,3 +1,4 @@
+import time
 import telebot
 import config
 import content
@@ -43,10 +44,11 @@ def to_say(probability):
     global messages_handled, messages_range
     if messages_handled >= messages_range:
         messages_handled = 0
-        r = random.randint(1, 1000)
-        if r <= 1000*probability:
-            #print("yes")
-            return True
+        random.seed(int(time.time()))
+    r = random.randint(1, 1000)
+    if r <= 1000*probability:
+        #print("yes")
+        return True
 
 
 def say(message):
