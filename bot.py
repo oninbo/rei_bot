@@ -30,7 +30,7 @@ def send_message(message):
         say(message)
     elif check_reply(message):
         reply(message)
-    if to_say(0.2*messages_handled):
+    if to_say(messages_handled/100*2):
         say(message)
 
 
