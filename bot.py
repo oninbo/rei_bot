@@ -46,8 +46,8 @@ def check_reply(message):
 
 def to_say(probability, chat_id):
     global messages_handled, messages_range
-    if messages_handled[chat_id] >= messages_range:
-        messages_handled = 0
+    if messages_handled[chat_id] > messages_range:
+        messages_handled[chat_id] = 0
         random.seed(int(time.time()))
     r = random.randint(1, 1000)
     if r <= 1000*probability:
