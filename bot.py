@@ -30,7 +30,7 @@ def send_message(message):
         say(message)
     elif check_reply(message):
         reply(message)
-    elif to_say():
+    if to_say(0.2*messages_handled):
         say(message)
 
 
@@ -39,12 +39,12 @@ def check_reply(message):
         return True
 
 
-def to_say():
+def to_say(probability):
     global messages_handled, messages_range
     if messages_handled >= messages_range:
         messages_handled = 0
         r = random.randint(1, 1000)
-        if r <= 200:
+        if r <= 1000*probability:
             #print("yes")
             return True
 
