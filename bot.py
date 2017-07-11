@@ -3,11 +3,12 @@ import telebot
 import config
 import content
 import random
+import math
 
 bot = telebot.TeleBot(config.token)
 
 messages_handled = {}
-messages_range = 10
+messages_range = 10000
 
 
 @bot.message_handler(commands=['start'])
@@ -30,12 +31,11 @@ def send_message(message):
         messages_handled[chat_id] = 0
     else:
         messages_handled[chat_id] += 1
-    print(message.chat)
     if message.chat.type == 'private':
         say(message)
     elif check_reply(message):
         reply(message)
-    if to_say(messages_handled[chat_id]/100*2, chat_id):
+    if to_say(math.sin(messages_handled[chat_id])*0.5, chat_id):
         say(message)
 
 
@@ -47,8 +47,8 @@ def check_reply(message):
 def to_say(probability, chat_id):
     global messages_handled, messages_range
     if messages_handled[chat_id] > messages_range:
-        messages_handled[chat_id] = 0
         random.seed(int(time.time()))
+        messages_handled[chat_id] = 0
     r = random.randint(1, 1000)
     if r <= 1000*probability:
         #print("yes")
