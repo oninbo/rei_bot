@@ -8,7 +8,8 @@ import math
 bot = telebot.TeleBot(config.token)
 
 messages_handled = {}
-messages_range = 10000
+messages_range = 100
+max_probability = 0.2
 
 
 @bot.message_handler(commands=['start'])
@@ -26,7 +27,7 @@ def ping(message):
 @bot.message_handler(func=lambda message: True, content_types=['text', 'sticker', 'photo'])
 def send_message(message):
     chat_id = message.chat.id
-    global messages_handled
+    #global messages_handled
     if chat_id not in messages_handled:
         messages_handled[chat_id] = 0
     else:
@@ -35,7 +36,7 @@ def send_message(message):
         say(message)
     elif check_reply(message):
         reply(message)
-    if to_say(math.sin(messages_handled[chat_id])*0.5, chat_id):
+    if to_say(math.sin(messages_handled[chat_id])*max_probability, chat_id):
         say(message)
 
 
@@ -45,12 +46,15 @@ def check_reply(message):
 
 
 def to_say(probability, chat_id):
+    #print(probability)
     global messages_handled, messages_range
     if messages_handled[chat_id] > messages_range:
         random.seed(int(time.time()))
         messages_handled[chat_id] = 0
-    r = random.randint(1, 1000)
-    if r <= 1000*probability:
+    max = 10000
+    r = random.randint(1, max+1)
+    #print(r)
+    if r <= max*probability:
         #print("yes")
         return True
 
