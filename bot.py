@@ -32,16 +32,16 @@ def send_message(message):
         messages_handled[chat_id] = 0
     else:
         messages_handled[chat_id] += 1
-    if message.chat.type == 'private':
+    if message.chat.type == 'private' and to_say(0.5, chat_id):
         say(message)
     elif check_reply(message):
         reply(message)
-    if to_say(math.sin(messages_handled[chat_id])*max_probability, chat_id):
+    if to_say(math.cos(messages_handled[chat_id])*max_probability, chat_id):
         say(message)
 
 
 def check_reply(message):
-    if message.reply_to_message and message.reply_to_message.from_user.username == 'Rei_Ayanami_2017_bot':
+    if message.reply_to_message and message.reply_to_message.from_user.username == bot.get_me().username:
         return True
 
 
