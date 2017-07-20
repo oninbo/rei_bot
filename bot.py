@@ -74,7 +74,9 @@ def get_phrase():
     return content.messages[random.randint(0, len(content.messages)-1)].value
 
 
-
-
 if __name__ == '__main__':
-    bot.polling(none_stop=True)
+    while True:
+        try:
+            bot.polling(none_stop=True)
+        except BaseException:
+            time.sleep(10)
