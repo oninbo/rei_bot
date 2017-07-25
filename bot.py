@@ -13,7 +13,7 @@ max_probability = 0.2
 
 
 @bot.message_handler(commands=['start'])
-def ping(message):
+def start_message(message):
     #print(message)
     say(message)
 
