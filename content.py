@@ -40,7 +40,6 @@ messages = [
     Message("text", "Пилот второй единицы."),
     Message("text", "Командующий Икари."),
     Message("text", "Кто ты? Кто ты? Кто ты?"),
-    Message("text", "Кто ты? Кто ты? Кто ты?"),
     Message("text", "Кто ты?"),
     Message("text", "Икари-кун, где ты?"),
 ]

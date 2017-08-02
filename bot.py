@@ -15,8 +15,10 @@ phrases = []
 
 
 def fill_phrases():
-    phrases = copy.deepcopy(content.messages)
+    global phrases
+    phrases = copy.copy(content.messages)
     random.shuffle(phrases)
+
 
 
 @bot.message_handler(commands=['start'])
@@ -56,10 +58,7 @@ def to_say(probability, chat_id):
     #print(probability)
     '''global messages_handled, messages_range
     if messages_handled[chat_id] > messages_range:
-        random.seed(int(time.time()))
         messages_handled[chat_id] = 0'''
-    if phrases:
-        fill_phrases()
     max = 10000
     r = random.randint(1, max+1)
     #print(r)
@@ -80,8 +79,13 @@ def reply(message, text=None):
 
 
 def get_phrase():
+    if not phrases:
+        n = int(time.time())
+        random.seed(n)
+        fill_phrases()
+        print(phrases)
     #return content.messages[random.randint(0, len(content.messages)-1)].value
-    return content.messages.pop().value
+    return phrases.pop().value
 
 
 if __name__ == '__main__':
