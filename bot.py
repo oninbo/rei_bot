@@ -4,7 +4,7 @@ import config
 import content
 import random
 import math
-import copy
+import db_manager
 
 bot = telebot.TeleBot(config.token)
 
@@ -16,9 +16,45 @@ phrases = []
 
 def fill_phrases():
     global phrases
-    phrases = copy.copy(content.messages)
+    phrases = content.messages + db_manager.get_quote_db_list()
     random.shuffle(phrases)
 
+
+@bot.message_handler(commands=['add_sticker'])
+def add_sticker(message):
+    print(message)
+    chat_id = message.chat.id
+    reply_message = message.reply_to_message
+    if reply_message and reply_message.content_type == 'sticker':
+        sticker = content.Message("sticker", reply_message.sticker.file_id)
+        db_manager.add_to_quote_db(sticker)
+        fill_phrases()
+        bot.send_message(chat_id, "The sticker has been successfully added")
+    else:
+        bot.send_message(chat_id, "Error. Wrong message type")
+
+
+@bot.message_handler(commands=['delete_sticker'])
+def delete_sticker(message):
+    print(message)
+    chat_id = message.chat.id
+    reply_message = message.reply_to_message
+    if reply_message and reply_message.content_type == 'sticker':
+        sticker = content.Message("sticker", reply_message.sticker.file_id)
+        db_manager.remove_from_quote_db(sticker)
+        fill_phrases()
+        bot.send_message(chat_id, "The sticker has been successfully deleted")
+    else:
+        bot.send_message(chat_id, "Error. Wrong message type")
+
+
+@bot.message_handler(commands=['say_all'])
+def say_all(message):
+    #print(message)
+    if not phrases:
+        fill_phrases()
+    for i in range(0, len(phrases)):
+        say(message)
 
 
 @bot.message_handler(commands=['start'])
@@ -29,14 +65,15 @@ def start_message(message):
 
 @bot.message_handler(commands=['ask'])
 def ping(message):
-    #print(message)
+    print(message.reply_to_message)
     reply(message)
 
 
 @bot.message_handler(func=lambda message: True, content_types=['text', 'sticker', 'photo'])
-def send_message(message):
+def reply_default_message(message):
+    #print(message.sticker.file_id)
+    #print(message.reply_to_message)
     chat_id = message.chat.id
-    #global messages_handled
     if chat_id not in messages_handled:
         messages_handled[chat_id] = 0
     else:
@@ -67,25 +104,32 @@ def to_say(probability, chat_id):
         return True
 
 
+send_functions = {}
+send_functions["sticker"] = bot.send_sticker
+send_functions["text"] = bot.send_message
+
+
 def say(message):
-    bot.send_message(message.chat.id, get_phrase())
+    message_to_say = get_message()
+    send_functions[message_to_say.message_type](message.chat.id, message_to_say.value)
 
 
 def reply(message, text=None):
     if text:
-        bot.send_message(message.chat.id, text, reply_to_message_id=message.message_id)
+        send_functions[message.message_type](message.chat.id, text, reply_to_message_id=message.message_id)
     else:
-        bot.send_message(message.chat.id, get_phrase(), reply_to_message_id=message.message_id)
+        message_to_say = get_message()
+        print(message_to_say.message_type)
+        send_functions[message_to_say.message_type](message.chat.id, message_to_say.value, reply_to_message_id=message.message_id)
 
 
-def get_phrase():
+def get_message():
     if not phrases:
         n = int(time.time())
         random.seed(n)
         fill_phrases()
-        print(phrases)
     #return content.messages[random.randint(0, len(content.messages)-1)].value
-    return phrases.pop().value
+    return phrases.pop()
 
 
 if __name__ == '__main__':
