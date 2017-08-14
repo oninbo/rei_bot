@@ -10,7 +10,7 @@ bot = telebot.TeleBot(config.token)
 
 messages_handled = {}
 messages_range = 100
-max_probability = 0.05
+max_probability = 0.01
 phrases = []
 
 
