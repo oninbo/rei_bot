@@ -10,7 +10,7 @@ bot = telebot.TeleBot(config.token)
 
 messages_handled = {}
 messages_range = 100
-max_probability = 0.2
+max_probability = 0.05
 phrases = []
 
 
@@ -82,7 +82,7 @@ def reply_default_message(message):
         say(message)
     elif check_reply(message):
         reply(message)
-    if to_say(math.cos(messages_handled[chat_id])*max_probability, chat_id):
+    if to_say(max_probability, chat_id):
         say(message)
 
 
