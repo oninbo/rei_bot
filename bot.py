@@ -3,7 +3,7 @@ import telebot
 import config
 import content
 import random
-import math
+import copy
 import db_manager
 
 bot = telebot.TeleBot(config.token)
@@ -64,7 +64,7 @@ def start_message(message):
 
 
 def get_greeting(name, key):
-    greeting = content.greetings[key]
+    greeting = copy.deepcopy(content.greetings[key])
     if name in content.names:
         name = content.names[name]
     greeting.value += name
@@ -78,13 +78,13 @@ def ping(message):
 
 
 @bot.message_handler(commands=['night'])
-def ping(message):
+def say_good_night(message):
     print(message.from_user.first_name)
     say(message, get_greeting(message.from_user.first_name, 'night'))
 
 
 @bot.message_handler(commands=['morning'])
-def ping(message):
+def say_good_morning(message):
     say(message, get_greeting(message.from_user.first_name, 'morning'))
 
 
