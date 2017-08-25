@@ -46,3 +46,12 @@ messages = [
     Message("text", "Кто ты?"),
     Message("text", "Икари-кун, где ты?"),
 ]
+
+greetings = {
+    "morning": Message("text", "Доброе утро, "),
+    "night": Message("text", "Спокойной ночи, ")
+}
+
+names = {
+    "Elena": "Лена"
+}

@@ -63,10 +63,29 @@ def start_message(message):
     say(message)
 
 
+def get_greeting(name, key):
+    greeting = content.greetings[key]
+    if name in content.names:
+        name = content.names[name]
+    greeting.value += name
+    return greeting
+
+
 @bot.message_handler(commands=['ask'])
 def ping(message):
     print(message.reply_to_message)
     reply(message)
+
+
+@bot.message_handler(commands=['night'])
+def ping(message):
+    print(message.from_user.first_name)
+    say(message, get_greeting(message.from_user.first_name, 'night'))
+
+
+@bot.message_handler(commands=['morning'])
+def ping(message):
+    say(message, get_greeting(message.from_user.first_name, 'morning'))
 
 
 @bot.message_handler(func=lambda message: True, content_types=['text', 'sticker', 'photo'])
@@ -109,8 +128,9 @@ send_functions["sticker"] = bot.send_sticker
 send_functions["text"] = bot.send_message
 
 
-def say(message):
-    message_to_say = get_message()
+def say(message, message_to_say=None):
+    if message_to_say == None:
+        message_to_say = get_message()
     send_functions[message_to_say.message_type](message.chat.id, message_to_say.value)
 
 
