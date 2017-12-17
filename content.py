@@ -3,6 +3,7 @@ class Message:
         self.message_type = message_type
         self.value = value
 
+
 messages = [
     Message("text", '''Ты бежишь от своих проблем.'''),
     Message("text", '''Ты хочешь слиться со мной? Стать одной душой, одним телом. Это очень-очень приятно.'''),
@@ -45,6 +46,8 @@ messages = [
     Message("text", "Кто ты? Кто ты? Кто ты?"),
     Message("text", "Кто ты?"),
     Message("text", "Икари-кун, где ты?"),
+    Message("photo", open('img/14010030952260.jpg', 'rb')),
+    Message("video", open('img/doc_2017-12-17_17-15-09.mp4', 'rb'))
 ]
 
 greetings = {

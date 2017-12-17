@@ -126,6 +126,8 @@ def to_say(probability, chat_id):
 send_functions = {}
 send_functions["sticker"] = bot.send_sticker
 send_functions["text"] = bot.send_message
+send_functions["video"] = bot.send_video
+send_functions["photo"] = bot.send_photo
 
 
 def say(message, message_to_say=None):
