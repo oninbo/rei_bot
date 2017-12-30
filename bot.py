@@ -22,7 +22,6 @@ def fill_phrases():
 
 @bot.message_handler(commands=['add_sticker'])
 def add_sticker(message):
-    print(message)
     chat_id = message.chat.id
     reply_message = message.reply_to_message
     if reply_message and reply_message.content_type == 'sticker':
@@ -36,7 +35,6 @@ def add_sticker(message):
 
 @bot.message_handler(commands=['delete_sticker'])
 def delete_sticker(message):
-    print(message)
     chat_id = message.chat.id
     reply_message = message.reply_to_message
     if reply_message and reply_message.content_type == 'sticker':
@@ -50,7 +48,6 @@ def delete_sticker(message):
 
 @bot.message_handler(commands=['say_all'])
 def say_all(message):
-    #print(message)
     if not phrases:
         fill_phrases()
     for i in range(0, len(phrases)):
@@ -59,7 +56,6 @@ def say_all(message):
 
 @bot.message_handler(commands=['start'])
 def start_message(message):
-    #print(message)
     say(message)
 
 
@@ -79,7 +75,6 @@ def ping(message):
 
 @bot.message_handler(commands=['night'])
 def say_good_night(message):
-    print(message.from_user.first_name)
     say(message, get_greeting(message.from_user.first_name, 'night'))
 
 
@@ -88,10 +83,14 @@ def say_good_morning(message):
     say(message, get_greeting(message.from_user.first_name, 'morning'))
 
 
+@bot.message_handler(commands=['hi'])
+def say_good_morning(message):
+    say(message, get_greeting(message.from_user.first_name, 'hi'))
+
+
 @bot.message_handler(func=lambda message: True, content_types=['text', 'sticker', 'photo'])
 def reply_default_message(message):
-    #print(message.sticker.file_id)
-    #print(message.reply_to_message)
+    print(message)
     chat_id = message.chat.id
     if chat_id not in messages_handled:
         messages_handled[chat_id] = 0
@@ -103,6 +102,13 @@ def reply_default_message(message):
         reply(message)
     if to_say(max_probability, chat_id):
         say(message)
+
+
+@bot.message_handler(func=lambda message: True, content_types=['new_chat_members'])
+def say_welcome(message):
+    print(message)
+    greeting = get_greeting(message.new_chat_member.first_name, 'welcome')
+    say(message, greeting)
 
 
 def check_reply(message):

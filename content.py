@@ -52,7 +52,9 @@ messages = [
 
 greetings = {
     "morning": Message("text", "Доброе утро, "),
-    "night": Message("text", "Спокойной ночи, ")
+    "night": Message("text", "Спокойной ночи, "),
+    "hi": Message("text", "Привет, "),
+    "welcome": Message("text", "Добро пожаловать, ")
 }
 
 names = {
