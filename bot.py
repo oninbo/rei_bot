@@ -61,8 +61,6 @@ def start_message(message):
 
 def get_greeting(name, key):
     greeting = copy.deepcopy(content.greetings[key])
-    if name in content.names:
-        name = content.names[name]
     greeting.value += name
     return greeting
 
@@ -86,6 +84,11 @@ def say_good_morning(message):
 @bot.message_handler(commands=['hi'])
 def say_good_morning(message):
     say(message, get_greeting(message.from_user.first_name, 'hi'))
+
+
+@bot.message_handler(commands=['happy_ny'])
+def say_good_morning(message):
+    say(message, get_greeting(message.from_user.first_name, 'happy_ny'))
 
 
 @bot.message_handler(func=lambda message: True, content_types=['text', 'sticker', 'photo'])
