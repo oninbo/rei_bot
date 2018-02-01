@@ -163,10 +163,25 @@ def get_message():
     return phrases.pop()
 
 
+def death_notify():
+    bot.send_message(config.creator_id,"Looks like I'm dead now")
+
+
+def alive_notify():
+    bot.send_message(config.creator_id,"Looks like I'm alive now")
+
+
 if __name__ == '__main__':
-    try:
-        bot.polling(none_stop=True)
-    except BaseException as e:
-        print("Some shit happened:")
-        print(e)
-        bot.send_message(config.creator_id,"Looks like I'm dead now")
+    while True:
+        try:
+            alive_notify()
+            bot.polling(none_stop=False)
+        except BaseException as e:
+            print("Some shit happened:")
+            print(e)
+            try:
+                death_notify()
+            except:
+                pass
+        print('wait for 10 seconds')
+        time.sleep(10)
