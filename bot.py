@@ -164,8 +164,9 @@ def get_message():
 
 
 if __name__ == '__main__':
-    while True:
-        try:
-            bot.polling(none_stop=True)
-        except BaseException:
-            time.sleep(10)
+    try:
+        bot.polling(none_stop=True)
+    except BaseException as e:
+        print("Some shit happened:")
+        print(e)
+        bot.send_message(config.creator_id,"Looks like I'm dead now")
