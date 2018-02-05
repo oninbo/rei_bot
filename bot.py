@@ -5,6 +5,24 @@ import content
 import random
 import copy
 import db_manager
+import logging
+
+logger = logging.getLogger('logger')
+logger.setLevel(logging.DEBUG)
+# create console handler with a higher log level
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+# create file handler which logs even debug messages
+fh = logging.FileHandler('logs')
+fh.setLevel(logging.INFO)
+# create formatter and add it to the handlers
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+ch.setFormatter(formatter)
+fh.setFormatter(formatter)
+# add the handlers to the logger
+logger.addHandler(ch)
+logger.addHandler(fh)
+
 
 bot = telebot.TeleBot(config.token)
 
@@ -67,7 +85,7 @@ def get_greeting(name, key):
 
 @bot.message_handler(commands=['ask'])
 def ping(message):
-    print(message.reply_to_message)
+    logger.debug(message.reply_to_message)
     reply(message)
 
 
@@ -93,23 +111,23 @@ def say_good_morning(message):
 
 @bot.message_handler(func=lambda message: True, content_types=['text', 'sticker', 'photo'])
 def reply_default_message(message):
-    print(message)
+    logger.debug(message)
     chat_id = message.chat.id
     if chat_id not in messages_handled:
         messages_handled[chat_id] = 0
     else:
         messages_handled[chat_id] += 1
-    if message.chat.type == 'private' and to_say(0.5, chat_id):
+    if message.chat.type == 'private' and to_say(0.5):
         say(message)
     elif check_reply(message):
         reply(message)
-    if to_say(max_probability, chat_id):
+    if to_say(max_probability):
         say(message)
 
 
 @bot.message_handler(func=lambda message: True, content_types=['new_chat_members'])
 def say_welcome(message):
-    print(message)
+    logger.debug(message)
     greeting = get_greeting(message.new_chat_member.first_name, 'welcome')
     say(message, greeting)
 
@@ -119,16 +137,10 @@ def check_reply(message):
         return True
 
 
-def to_say(probability, chat_id):
-    #print(probability)
-    '''global messages_handled, messages_range
-    if messages_handled[chat_id] > messages_range:
-        messages_handled[chat_id] = 0'''
-    max = 10000
-    r = random.randint(1, max+1)
-    #print(r)
-    if r <= max*probability:
-        #print("yes")
+def to_say(probability):
+    _max = 10000
+    r = random.randint(1, _max+1)
+    if r <= _max*probability:
         return True
 
 
@@ -150,7 +162,7 @@ def reply(message, text=None):
         send_functions[message.message_type](message.chat.id, text, reply_to_message_id=message.message_id)
     else:
         message_to_say = get_message()
-        print(message_to_say.message_type)
+        logger.debug(message_to_say.message_type)
         send_functions[message_to_say.message_type](message.chat.id, message_to_say.value, reply_to_message_id=message.message_id)
 
 
@@ -159,7 +171,6 @@ def get_message():
         n = int(time.time())
         random.seed(n)
         fill_phrases()
-    #return content.messages[random.randint(0, len(content.messages)-1)].value
     return phrases.pop()
 
 
@@ -173,15 +184,17 @@ def alive_notify():
 
 if __name__ == '__main__':
     while True:
+        logger.debug('trying to connect')
         try:
             alive_notify()
+            logger.info('connected successfully')
             bot.polling(none_stop=False)
         except BaseException as e:
-            print("Some shit happened:")
-            print(e)
+            logger.info("Some shit happened")
+            logger.error(e)
             try:
                 death_notify()
             except:
                 pass
-        print('wait for 10 seconds')
+        logger.debug('wait for 10 seconds')
         time.sleep(10)
