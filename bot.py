@@ -23,7 +23,7 @@ fh.setFormatter(formatter)
 logger.addHandler(ch)
 logger.addHandler(fh)
 
-telebot.logger(logging.INFO)
+telebot.logger.setLevel(logging.INFO)
 
 bot = telebot.TeleBot(config.token)
 
