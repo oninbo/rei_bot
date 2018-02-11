@@ -5,25 +5,12 @@ import content
 import random
 import copy
 import db_manager
-import logging
+from logger import logger, fh
+from logging import INFO
+import message_writer
 
-logger = logging.getLogger('logger')
-logger.setLevel(logging.DEBUG)
-# create console handler with a higher log level
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
-# create file handler which logs even debug messages
-fh = logging.FileHandler('logs')
-fh.setLevel(logging.INFO)
-# create formatter and add it to the handlers
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-ch.setFormatter(formatter)
-fh.setFormatter(formatter)
-# add the handlers to the logger
-logger.addHandler(ch)
-logger.addHandler(fh)
-
-telebot.logger.setLevel(logging.INFO)
+telebot.logger.addHandler(fh)
+telebot.logger.setLevel(INFO)
 
 bot = telebot.TeleBot(config.token)
 
@@ -113,6 +100,7 @@ def say_good_morning(message):
 @bot.message_handler(func=lambda message: True, content_types=['text', 'sticker', 'photo'])
 def reply_default_message(message):
     logger.debug(message)
+    message_writer.writer.info(message)
     chat_id = message.chat.id
     if chat_id not in messages_handled:
         messages_handled[chat_id] = 0
@@ -188,8 +176,7 @@ if __name__ == '__main__':
         logger.debug('trying to connect')
         try:
             alive_notify()
-            logger.info('connected successfully')
-            bot.polling(none_stop=False)
+            bot.polling(none_stop=True)
         except BaseException as e:
             logger.info("Some shit happened")
             logger.error(e)
