@@ -7,7 +7,6 @@ import copy
 import db_manager
 from logger import logger, fh
 from logging import INFO
-import message_writer
 
 telebot.logger.addHandler(fh)
 telebot.logger.setLevel(INFO)
@@ -17,13 +16,19 @@ bot = telebot.TeleBot(config.token)
 messages_handled = {}
 messages_range = 100
 max_probability = 0.01
-phrases = []
+chat_phrases = {}
 
 
 def fill_phrases():
-    global phrases
     phrases = content.messages + db_manager.get_quote_db_list()
     random.shuffle(phrases)
+    return phrases
+
+
+def update_phrases():
+    global chat_phrases
+    for p in chat_phrases:
+        p = fill_phrases()
 
 
 @bot.message_handler(commands=['add_sticker'])
@@ -33,7 +38,7 @@ def add_sticker(message):
     if reply_message and reply_message.content_type == 'sticker':
         sticker = content.Message("sticker", reply_message.sticker.file_id)
         db_manager.add_to_quote_db(sticker)
-        fill_phrases()
+        update_phrases()
         bot.send_message(chat_id, "The sticker has been successfully added")
     else:
         bot.send_message(chat_id, "Error. Wrong message type")
@@ -46,7 +51,7 @@ def delete_sticker(message):
     if reply_message and reply_message.content_type == 'sticker':
         sticker = content.Message("sticker", reply_message.sticker.file_id)
         db_manager.remove_from_quote_db(sticker)
-        fill_phrases()
+        update_phrases()
         bot.send_message(chat_id, "The sticker has been successfully deleted")
     else:
         bot.send_message(chat_id, "Error. Wrong message type")
@@ -54,10 +59,10 @@ def delete_sticker(message):
 
 @bot.message_handler(commands=['say_all'])
 def say_all(message):
-    if not phrases:
-        fill_phrases()
-    for i in range(0, len(phrases)):
-        say(message)
+    phrases = fill_phrases()
+    for i, p in enumerate(phrases):
+        send_functions[p.message_type](message.chat.id, p.value)
+    send_functions["text"](message.chat.id, "Done")
 
 
 @bot.message_handler(commands=['start'])
@@ -73,7 +78,6 @@ def get_greeting(name, key):
 
 @bot.message_handler(commands=['ask'])
 def ping(message):
-    logger.debug(message.reply_to_message)
     reply(message)
 
 
@@ -99,13 +103,7 @@ def say_good_morning(message):
 
 @bot.message_handler(func=lambda message: True, content_types=['text', 'sticker', 'photo'])
 def reply_default_message(message):
-    logger.debug(message)
-    message_writer.writer.info(message)
     chat_id = message.chat.id
-    if chat_id not in messages_handled:
-        messages_handled[chat_id] = 0
-    else:
-        messages_handled[chat_id] += 1
     if message.chat.type == 'private' and to_say(0.5):
         say(message)
     elif check_reply(message):
@@ -141,34 +139,36 @@ send_functions["photo"] = bot.send_photo
 
 
 def say(message, message_to_say=None):
+    logger.info(message)
     if message_to_say == None:
-        message_to_say = get_message()
+        message_to_say = get_message(message.chat.id)
     send_functions[message_to_say.message_type](message.chat.id, message_to_say.value)
 
 
 def reply(message, text=None):
+    logger.info(message)
     if text:
         send_functions[message.message_type](message.chat.id, text, reply_to_message_id=message.message_id)
     else:
-        message_to_say = get_message()
-        logger.debug(message_to_say.message_type)
+        message_to_say = get_message(message.chat.id)
         send_functions[message_to_say.message_type](message.chat.id, message_to_say.value, reply_to_message_id=message.message_id)
 
 
-def get_message():
-    if not phrases:
-        n = int(time.time())
-        random.seed(n)
-        fill_phrases()
-    return phrases.pop()
+def get_message(chat_id):
+    if chat_id not in chat_phrases:
+        chat_phrases[chat_id] = []
+    if len(chat_phrases[chat_id]) == 0:
+        chat_phrases[chat_id] = fill_phrases()
+    message = chat_phrases[chat_id].pop()
+    return message
 
 
 def death_notify():
-    bot.send_message(config.creator_id,"Looks like I'm dead now")
+    bot.send_message(config.creator_id, "Looks like I'm dead now")
 
 
 def alive_notify():
-    bot.send_message(config.creator_id,"Looks like I'm alive now")
+    bot.send_message(config.creator_id, "Looks like I'm alive now")
 
 
 if __name__ == '__main__':
