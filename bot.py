@@ -20,6 +20,7 @@ chat_phrases = {}
 
 
 def fill_phrases():
+    random.seed(int(time.time()))
     phrases = content.messages + db_manager.get_quote_db_list()
     random.shuffle(phrases)
     return phrases
