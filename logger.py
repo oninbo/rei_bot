@@ -1,4 +1,5 @@
 import logging
+from logging.handlers import RotatingFileHandler
 
 logger = logging.getLogger('logger')
 logger.setLevel(logging.DEBUG)
@@ -6,7 +7,7 @@ logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
 # create file handler which logs even debug messages
-fh = logging.FileHandler('logs')
+fh = RotatingFileHandler('logs/logs', maxBytes=10000)
 fh.setLevel(logging.INFO)
 # create formatter and add it to the handlers
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
