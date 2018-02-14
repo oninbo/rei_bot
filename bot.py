@@ -113,7 +113,7 @@ def reply_default_message(message):
     chat_id = message.chat.id
     if message.chat.type == 'private' and to_say(0.5):
         say(message)
-    elif check_reply(message):
+    elif check_reply(message) or check_mention(message):
         reply(message)
     if to_say(max_probability):
         say(message)
@@ -127,8 +127,15 @@ def say_welcome(message):
 
 
 def check_reply(message):
-    if message.reply_to_message and message.reply_to_message.from_user.username == bot.get_me().username:
-        return True
+    return message.reply_to_message and message.reply_to_message.from_user.username == bot.get_me().username
+
+
+def check_mention(message):
+    if message.entities:
+        for e in message.entities:
+            if e.type == "mention" and message.text[e.offset+1:e.offset+e.length] == bot.get_me().username:
+                return True
+    return False
 
 
 def to_say(probability):
