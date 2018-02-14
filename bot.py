@@ -13,6 +13,7 @@ telebot.logger.setLevel(INFO)
 
 bot = telebot.TeleBot(config.token)
 
+
 messages_handled = {}
 messages_range = 100
 max_probability = 0.01
@@ -64,6 +65,11 @@ def say_all(message):
     for i, p in enumerate(phrases):
         send_functions[p.message_type](message.chat.id, p.value)
     send_functions["text"](message.chat.id, "Done")
+
+
+@bot.message_handler(commands=['logs'])
+def say_all(message):
+    bot.send_document(config.creator_id, open("logs/logs"))
 
 
 @bot.message_handler(commands=['start'])
