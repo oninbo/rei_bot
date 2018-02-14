@@ -13,11 +13,9 @@ telebot.logger.setLevel(INFO)
 
 bot = telebot.TeleBot(config.token)
 
-
-messages_handled = {}
-messages_range = 100
-max_probability = 0.01
+say_probability = 0.01
 chat_phrases = {}
+sentiment_phrases = {}
 
 
 def fill_phrases():
@@ -31,6 +29,10 @@ def update_phrases():
     global chat_phrases
     for p in chat_phrases:
         p = fill_phrases()
+
+
+def set_sentiment():
+    pass
 
 
 @bot.message_handler(commands=['add_sticker'])
@@ -115,7 +117,7 @@ def reply_default_message(message):
         say(message)
     elif check_reply(message) or check_mention(message):
         reply(message)
-    if to_say(max_probability):
+    if to_say(say_probability):
         say(message)
 
 
@@ -190,7 +192,7 @@ if __name__ == '__main__':
         logger.debug('trying to connect')
         try:
             alive_notify()
-            bot.polling(none_stop=True)
+            bot.polling(none_stop=True, interval=15)
         except BaseException as e:
             logger.info("Some shit happened")
             logger.error(e)
