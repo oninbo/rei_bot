@@ -5,7 +5,7 @@ import content
 import random
 import copy
 import db_manager
-from logger import logger, fh
+from logger import logger, fh, log_file
 from logging import INFO
 
 telebot.logger.addHandler(fh)
@@ -69,7 +69,7 @@ def say_all(message):
 
 @bot.message_handler(commands=['logs'])
 def say_all(message):
-    bot.send_document(config.creator_id, open("logs/logs"))
+    bot.send_document(config.creator_id, open(log_file))
 
 
 @bot.message_handler(commands=['start'])
