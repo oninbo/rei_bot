@@ -13,7 +13,7 @@ telebot.logger.setLevel(INFO)
 
 bot = telebot.TeleBot(config.token)
 
-say_probability = 0.01
+say_probability = 0.05
 chat_phrases = {}
 sentiment_phrases = {}
 
