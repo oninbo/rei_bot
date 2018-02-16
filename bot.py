@@ -194,8 +194,7 @@ if __name__ == '__main__':
             alive_notify()
             bot.polling(none_stop=True, interval=15)
         except BaseException as e:
-            logger.info("Some shit happened")
-            logger.error(e)
+            logger.exception(e)
             try:
                 death_notify()
             except:
