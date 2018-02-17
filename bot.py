@@ -2,7 +2,7 @@ import time
 import telebot
 import random
 import copy
-from src import db_manager, config
+from src import db_manager, config, sentiment_messages
 import content
 from src.logger import logger, fh, log_file
 from logging import INFO
@@ -154,7 +154,7 @@ send_functions["photo"] = bot.send_photo
 def say(message, message_to_say=None):
     logger.info(message)
     if message_to_say == None:
-        message_to_say = get_message(message.chat.id)
+        message_to_say = get_message(message)
     send_functions[message_to_say.message_type](message.chat.id, message_to_say.value)
 
 
@@ -163,11 +163,17 @@ def reply(message, text=None):
     if text:
         send_functions[message.message_type](message.chat.id, text, reply_to_message_id=message.message_id)
     else:
-        message_to_say = get_message(message.chat.id)
+        message_to_say = get_message(message)
         send_functions[message_to_say.message_type](message.chat.id, message_to_say.value, reply_to_message_id=message.message_id)
 
 
-def get_message(chat_id):
+def get_message(message):
+    if message.content_type == 'text':
+        sentiment_message = sentiment_messages.get_message(message.text)
+        if sentiment_message is not None:
+            logger.info('sentimental')
+            return sentiment_message
+    chat_id = message.chat.id
     if chat_id not in chat_phrases:
         chat_phrases[chat_id] = []
     if len(chat_phrases[chat_id]) == 0:
