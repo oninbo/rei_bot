@@ -1,7 +1,7 @@
 import logging
 from logging.handlers import TimedRotatingFileHandler
 
-log_file = 'logs/logs.txt'
+log_file = 'data/logs/logs.txt'
 
 logger = logging.getLogger('logger')
 logger.setLevel(logging.DEBUG)

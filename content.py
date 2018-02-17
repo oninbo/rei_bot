@@ -46,8 +46,8 @@ messages = [
     Message("text", "Кто ты? Кто ты? Кто ты?"),
     Message("text", "Кто ты?"),
     Message("text", "Икари-кун, где ты?"),
-    Message("photo", open('img/14010030952260.jpg', 'rb')),
-    Message("video", open('img/doc_2017-12-17_17-15-09.mp4', 'rb'))
+    Message("photo", open('data/img/14010030952260.jpg', 'rb')),
+    Message("video", open('data/img/doc_2017-12-17_17-15-09.mp4', 'rb'))
 ]
 
 greetings = {

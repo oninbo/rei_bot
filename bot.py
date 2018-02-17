@@ -1,11 +1,10 @@
 import time
 import telebot
-import config
-import content
 import random
 import copy
-import db_manager
-from logger import logger, fh, log_file
+from src import db_manager, config
+import content
+from src.logger import logger, fh, log_file
 from logging import INFO
 
 telebot.logger.addHandler(fh)
@@ -13,26 +12,25 @@ telebot.logger.setLevel(INFO)
 
 bot = telebot.TeleBot(config.token)
 
+phrases = content.messages + db_manager.get_quote_db_list()
 say_probability = 0.05
 chat_phrases = {}
-sentiment_phrases = {}
 
 
 def fill_phrases():
+    global phrases
     random.seed(int(time.time()))
-    phrases = content.messages + db_manager.get_quote_db_list()
-    random.shuffle(phrases)
-    return phrases
+    _phrases = copy.copy(phrases)
+    random.shuffle(_phrases)
+    return _phrases
 
 
 def update_phrases():
+    global phrases
+    phrases = content.messages + db_manager.get_quote_db_list()
     global chat_phrases
     for p in chat_phrases:
         p = fill_phrases()
-
-
-def set_sentiment():
-    pass
 
 
 @bot.message_handler(commands=['add_sticker'])
@@ -112,7 +110,6 @@ def say_good_morning(message):
 
 @bot.message_handler(func=lambda message: True, content_types=['text', 'sticker', 'photo'])
 def reply_default_message(message):
-    chat_id = message.chat.id
     if message.chat.type == 'private' and to_say(0.5):
         say(message)
     elif check_reply(message) or check_mention(message):
