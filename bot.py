@@ -148,14 +148,14 @@ def check_mention(message):
 
 
 def remove_commands(text):
-    commands = re.findall("\W*\/[a-zA-Z]+\W*", text)
+    commands = re.findall("\/[a-zA-Z0-9_]+", text)
     for c in commands:
         text = text.replace(c, "")
     return text
 
 
 def remove_mentions(text):
-    mentions = re.findall("\W*@[a-zA-Z]+\W*", text)
+    mentions = re.findall("@[a-zA-Z0-9_]+", text)
     for m in mentions:
         text = text.replace(m, "")
     return text
