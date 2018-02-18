@@ -2,6 +2,7 @@ import time
 import telebot
 import random
 import copy
+import re
 from src import db_manager, config, sentiment_messages
 import content
 from src.logger import logger, fh, log_file
@@ -35,42 +36,39 @@ def update_phrases():
 
 @bot.message_handler(commands=['add_sticker'])
 def add_sticker(message):
-    chat_id = message.chat.id
     reply_message = message.reply_to_message
     if reply_message and reply_message.content_type == 'sticker':
         sticker = content.Message("sticker", reply_message.sticker.file_id)
         db_manager.add_to_quote_db(sticker)
         update_phrases()
-        bot.send_message(chat_id, "The sticker has been successfully added")
+        bot.reply_to(message, "The sticker has been successfully added")
     else:
-        bot.send_message(chat_id, "Error. Wrong message type")
+        bot.reply_to(message, "Error. Wrong message type")
 
 
 @bot.message_handler(commands=['delete_sticker'])
 def delete_sticker(message):
-    chat_id = message.chat.id
     reply_message = message.reply_to_message
     if reply_message and reply_message.content_type == 'sticker':
         sticker = content.Message("sticker", reply_message.sticker.file_id)
         db_manager.remove_from_quote_db(sticker)
         update_phrases()
-        bot.send_message(chat_id, "The sticker has been successfully deleted")
+        bot.reply_to(message, "The sticker has been successfully deleted")
     else:
-        bot.send_message(chat_id, "Error. Wrong message type")
+        bot.reply_to(message, "Error. Wrong message type")
 
 
 @bot.message_handler(commands=['add_sticker_set'])
 def add_sticker_set(message):
-    chat_id = message.chat.id
     reply_message = message.reply_to_message
     if reply_message and reply_message.content_type == 'sticker':
         sticker_set = bot.get_sticker_set(reply_message.sticker.set_name)
         for sticker in sticker_set.stickers:
             db_manager.add_to_quote_db(content.Message("sticker", sticker.file_id))
         update_phrases()
-        bot.send_message(chat_id, "The sticker pack has been successfully added")
+        bot.reply_to(message, "The sticker pack has been successfully added")
     else:
-        bot.send_message(chat_id, "Error. Wrong message type")
+        bot.reply_to(message, "Error. Wrong message type")
 
 
 @bot.message_handler(commands=['say_all'])
@@ -86,11 +84,6 @@ def say_all(message):
     bot.send_document(config.creator_id, open(log_file))
 
 
-@bot.message_handler(commands=['start'])
-def start_message(message):
-    say(message)
-
-
 def get_greeting(name, key):
     greeting = copy.deepcopy(content.greetings[key])
     greeting.value += name
@@ -99,7 +92,10 @@ def get_greeting(name, key):
 
 @bot.message_handler(commands=['ask'])
 def ping(message):
-    reply(message)
+    if message.reply_to_message:
+        reply(message.reply_to_message)
+    else:
+        reply(message)
 
 
 @bot.message_handler(commands=['night'])
@@ -124,10 +120,10 @@ def say_good_morning(message):
 
 @bot.message_handler(func=lambda message: True, content_types=['text', 'sticker', 'photo'])
 def reply_default_message(message):
-    if message.chat.type == 'private' and to_say(0.5):
-        say(message)
-    elif check_reply(message) or check_mention(message):
+    if check_mention(message) or check_reply(message):
         reply(message)
+    elif message.chat.type == 'private' and to_say(0.5):
+        say(message)
     if to_say(say_probability):
         say(message)
 
@@ -149,6 +145,20 @@ def check_mention(message):
             if e.type == "mention" and message.text[e.offset+1:e.offset+e.length] == bot.get_me().username:
                 return True
     return False
+
+
+def remove_commands(text):
+    commands = re.findall("\W*\/[a-zA-Z]+\W*", text)
+    for c in commands:
+        text = text.replace(c, "")
+    return text
+
+
+def remove_mentions(text):
+    mentions = re.findall("\W*@[a-zA-Z]+\W*", text)
+    for m in mentions:
+        text = text.replace(m, "")
+    return text
 
 
 def to_say(probability):
@@ -183,7 +193,7 @@ def reply(message, text=None):
 
 def get_message(message):
     if message.content_type == 'text':
-        sentiment_message = sentiment_messages.get_message(message.text)
+        sentiment_message = sentiment_messages.get_message(remove_mentions(remove_commands(message.text)))
         if sentiment_message is not None:
             logger.info('sentimental')
             return sentiment_message
