@@ -59,6 +59,20 @@ def delete_sticker(message):
         bot.send_message(chat_id, "Error. Wrong message type")
 
 
+@bot.message_handler(commands=['add_sticker_set'])
+def add_sticker_set(message):
+    chat_id = message.chat.id
+    reply_message = message.reply_to_message
+    if reply_message and reply_message.content_type == 'sticker':
+        sticker_set = bot.get_sticker_set(reply_message.sticker.set_name)
+        for sticker in sticker_set.stickers:
+            db_manager.add_to_quote_db(content.Message("sticker", sticker.file_id))
+        update_phrases()
+        bot.send_message(chat_id, "The sticker pack has been successfully added")
+    else:
+        bot.send_message(chat_id, "Error. Wrong message type")
+
+
 @bot.message_handler(commands=['say_all'])
 def say_all(message):
     phrases = fill_phrases()
