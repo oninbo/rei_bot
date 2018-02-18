@@ -23,10 +23,17 @@ def get_message(text):
     try:
         text_sentiment = indicoio.sentiment(text)
         print(text, text_sentiment)
-        for k, v in messages.items():
-            if k >= text_sentiment:
-                return v
-        return messages.values()[-1]
+        sentiments = list(messages.keys())
+        for i, (k, v) in enumerate(messages.items()):
+            if k > text_sentiment:
+                print(k, v.value)
+                if i == 0:
+                    return v
+                if abs(k - text_sentiment) < abs(sentiments[i-1] - text_sentiment):
+                    return v
+                else:
+                    return messages[sentiments[i-1]]
+        return messages[sentiments[-1]]
     except BaseException as e:
         print(e)
-        return None
+    return None
