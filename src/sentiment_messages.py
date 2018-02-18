@@ -25,7 +25,7 @@ def get_message(text):
         print(text, text_sentiment)
         for k, v in messages.items():
             if k >= text_sentiment:
-                return messages[k]
+                return v
         return messages.values()[-1]
     except BaseException as e:
         print(e)
