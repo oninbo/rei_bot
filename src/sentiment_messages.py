@@ -2,38 +2,48 @@ import json
 import indicoio
 from src.config import indicoio_api_key
 from content import Message
+import random
+import time
+
+random.seed(int(time.time()))
 
 indicoio.config.api_key = indicoio_api_key
 
 messages = {}  # {sentiment_value: Message,...}
 
-phrases_sentiment = json.load(open("data/sentiment/phrases.json"))
+""" planned to use text messages only in case of keyword search
+phrases_sentiment = json.load(open("data/sentiment/phrases.json")) 
+
+for s, v in phrases_sentiment.items():
+    if v not in messages:
+        messages[v] = []
+    messages[v].append(Message("text", s))
+"""
+
 stickers_sentiment = json.load(open("data/sentiment/stickers.json"))
 
-for k, v in phrases_sentiment.items():
-    messages[v] = Message("text", k)
-
-for k, v in stickers_sentiment.items():
-    messages[v] = Message("sticker", k)
-
-messages = dict(sorted(messages.items()))
+for s, v in stickers_sentiment.items():
+    if v not in messages.keys():
+        messages[v] = []
+    messages[v].append(Message("sticker", s))
 
 
 def get_message(text):
     try:
         text_sentiment = indicoio.sentiment(text)
         print(text, text_sentiment)
-        sentiments = list(messages.keys())
-        for i, (k, v) in enumerate(messages.items()):
-            if k > text_sentiment:
-                print(k, v.value)
-                if i == 0:
-                    return v
-                if abs(k - text_sentiment) < abs(sentiments[i-1] - text_sentiment):
-                    return v
+        sentiments = sorted(list(messages.keys()))
+        for i, s in enumerate(sentiments):
+            if s > text_sentiment:
+                if s == sentiments[-1] or abs(s - text_sentiment) < abs(sentiments[i - 1] - text_sentiment):
+                    result_sentiment = s
+                    break
                 else:
-                    return messages[sentiments[i-1]]
-        return messages[sentiments[-1]]
+                    result_sentiment = sentiments[i-1]
+                    break
+        if result_sentiment is None:
+            result_sentiment = sentiments[-1]
+        return random.choice(messages[result_sentiment])
     except BaseException as e:
         print(e)
     return None
