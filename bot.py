@@ -219,6 +219,7 @@ if __name__ == '__main__':
         logger.debug('trying to connect')
         try:
             alive_notify()
+            sentiment_messages.set_language_proportions()
             bot.polling(none_stop=True, interval=15)
         except BaseException as e:
             logger.exception(e)

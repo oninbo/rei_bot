@@ -8,6 +8,19 @@ import src.translator as translator
 
 random.seed(int(time.time()))
 
+language_proportions = []
+
+
+def set_language_proportions():
+    global language_proportions
+    language_proportions = [
+        random.random(),  # original messages
+        random.random()  # English messages
+    ]
+
+    print(language_proportions)
+
+
 indicoio.config.api_key = indicoio_api_key
 
 messages = {}  # {sentiment_value: Message,...}
@@ -33,7 +46,7 @@ for s, v in stickers_sentiment.items():
 def get_message(text):
     try:
         text_sentiment = \
-            indicoio.sentiment(random.choices([text, translator.translate(text)], weights=[0.3, 0.4])[0])
+            indicoio.sentiment(random.choices([text, translator.translate(text)], weights=language_proportions)[0])
         print(text_sentiment)
         sentiments = sorted(list(messages.keys()))
         result_sentiment = None
