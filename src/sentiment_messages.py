@@ -33,6 +33,7 @@ def get_message(text):
         text_sentiment = indicoio.sentiment(text)
         print(text, text_sentiment)
         sentiments = sorted(list(messages.keys()))
+        result_sentiment = None
         for i, s in enumerate(sentiments):
             if s > text_sentiment:
                 if s == sentiments[-1] or abs(s - text_sentiment) < abs(sentiments[i - 1] - text_sentiment):
