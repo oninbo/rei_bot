@@ -33,7 +33,8 @@ for s, v in stickers_sentiment.items():
 def get_message(text):
     try:
         text_sentiment = \
-            indicoio.sentiment(random.choice([text, translator.translate(text)]))
+            indicoio.sentiment(random.choices([text, translator.translate(text)], weights=[0.3, 0.4])[0])
+        print(text_sentiment)
         sentiments = sorted(list(messages.keys()))
         result_sentiment = None
         for i, s in enumerate(sentiments):
