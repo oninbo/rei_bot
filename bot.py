@@ -11,10 +11,12 @@ from logging import INFO
 telebot.logger.addHandler(fh)
 telebot.logger.setLevel(INFO)
 
-bot = telebot.TeleBot(config.token)
+bot = telebot.TeleBot(config.bot_token)
+
+debug_mode = False
 
 phrases = content.messages + db_manager.get_quote_db_list()
-say_probability = 0.05
+say_probability = 0.04
 chat_phrases = {}
 
 
@@ -84,6 +86,19 @@ def say_all(message):
     bot.send_document(config.creator_id, open(log_file))
 
 
+@bot.message_handler(commands=['debug'])
+def set_debug(message):
+    global debug_mode
+    debug_mode = not debug_mode
+    notification = "Debug mode is"
+    if debug_mode:
+        notification += " on"
+    else:
+        notification += " off"
+    logger.debug('debug mode ' + str(debug_mode))
+    bot.send_message(config.creator_id, notification)
+
+
 def get_greeting(name, key):
     greeting = copy.deepcopy(content.greetings[key])
     greeting.value += name
@@ -118,13 +133,14 @@ def say_good_morning(message):
     say(message, get_greeting(message.from_user.first_name, 'happy_ny'))
 
 
-@bot.message_handler(func=lambda message: True, content_types=['text', 'sticker', 'photo'])
+@bot.message_handler(func=lambda message: True, content_types=['text'])
 def reply_default_message(message):
     if check_mention(message) or check_reply(message):
         reply(message)
-    elif message.chat.type == 'private' and to_say(0.5):
-        say(message)
-    if to_say(say_probability):
+    elif message.chat.type == 'private':
+        if (debug_mode and message.chat.id == config.creator_id) or check_question(message.text):
+            say(message)
+    if random.choices([True, False], weights=[say_probability, 1 - say_probability])[0]:
         say(message)
 
 
@@ -161,11 +177,8 @@ def remove_mentions(text):
     return text
 
 
-def to_say(probability):
-    _max = 10000
-    r = random.randint(1, _max+1)
-    if r <= _max*probability:
-        return True
+def check_question(text):
+    return len(re.findall("\\?", text)) > 0
 
 
 send_functions = {}
@@ -191,11 +204,17 @@ def reply(message, text=None):
         send_functions[message_to_say.message_type](message.chat.id, message_to_say.value, reply_to_message_id=message.message_id)
 
 
+def set_probability(value):
+    global say_probability
+    say_probability = value/10
+
+
 def get_message(message):
     if message.content_type == 'text':
         sentiment_message = sentiment_messages.get_message(remove_mentions(remove_commands(message.text)))
         if sentiment_message is not None:
             logger.info('sentimental')
+            set_probability(sentiment_messages.mood_value)
             return sentiment_message
     chat_id = message.chat.id
     if chat_id not in chat_phrases:
@@ -220,6 +239,8 @@ if __name__ == '__main__':
         try:
             alive_notify()
             sentiment_messages.set_language_proportions()
+            sentiment_messages.set_mood()
+            set_probability(sentiment_messages.mood_value)
             bot.polling(none_stop=True, interval=15)
         except BaseException as e:
             logger.exception(e)
