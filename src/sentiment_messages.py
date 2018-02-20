@@ -6,6 +6,7 @@ import random
 import time
 import src.translator as translator
 from src.logger import logger
+import emoji, re
 
 random.seed(int(time.time()))
 
@@ -38,6 +39,8 @@ indicoio.config.api_key = indicoio_api_key
 
 messages = {} # {sentiment_value: Message,...}
 
+emoji_sentiment = json.load(open("data/sentiment/emoji.json"))
+
 # TODO: use text messages only in case of keyword search
 """
 phrases_sentiment = json.load(open("data/sentiment/phrases.json")) 
@@ -48,7 +51,9 @@ for s, v in phrases_sentiment.items():
     messages[v].append(Message("text", s))
 """
 
-stickers_sentiment = json.load(open("data/sentiment/stickers.json"))
+stickers_path = "data/sentiment/stickers.json"
+
+stickers_sentiment = json.load(open(stickers_path))
 
 for s, v in stickers_sentiment.items():
     if v not in messages.keys():
@@ -77,10 +82,15 @@ def get_message(text):
 
 
 def sentiment_from_text(text):
+    emojis = re.findall(emoji.get_emoji_regexp(), text)
+    text_sentiment = 0
+    for e in emojis:
+        text_sentiment += emoji_sentiment[e]
     is_original = random.choices([True, False], weights=language_proportions)[0]
     if not is_original:
         text = translator.translate(text)
-    text_sentiment = indicoio.sentiment(text)
+    text_sentiment += indicoio.sentiment(text)
+    text_sentiment /= len(emojis)+1
     logger.debug([text, text_sentiment])
 
     return text_sentiment
@@ -100,3 +110,22 @@ def chose_message(sentiment):
     if result_sentiment is None:
         result_sentiment = sentiments[-1]
     return result_sentiment
+
+
+def add_stickers_sentiment(stickers):
+    global stickers_sentiment
+    for sticker in stickers:
+        if sticker.file_id not in stickers_sentiment and sticker.emoji in emoji_sentiment:
+            stickers_sentiment[sticker.file_id] = emoji_sentiment[sticker.emoji]
+    with open(stickers_path, 'w') as f:
+        f.write(json.dumps(stickers_sentiment, indent=4))
+    f.closed
+
+
+def delete_sticker(sticker):
+    global stickers_sentiment
+    if sticker.file_id in stickers_sentiment:
+        del stickers_sentiment[sticker.file_id]
+    with open(stickers_path, 'w') as f:
+        f.write(json.dumps(stickers_sentiment, indent=4))
+    f.closed

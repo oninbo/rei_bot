@@ -42,6 +42,7 @@ def add_sticker(message):
     if reply_message and reply_message.content_type == 'sticker':
         sticker = content.Message("sticker", reply_message.sticker.file_id)
         db_manager.add_to_quote_db(sticker)
+        sentiment_messages.add_stickers_sentiment([reply_message.sticker])
         update_phrases()
         bot.reply_to(message, "The sticker has been successfully added")
     else:
@@ -54,6 +55,7 @@ def delete_sticker(message):
     if reply_message and reply_message.content_type == 'sticker':
         sticker = content.Message("sticker", reply_message.sticker.file_id)
         db_manager.remove_from_quote_db(sticker)
+        sentiment_messages.delete_sticker(reply_message.sticker)
         update_phrases()
         bot.reply_to(message, "The sticker has been successfully deleted")
     else:
@@ -67,6 +69,7 @@ def add_sticker_set(message):
         sticker_set = bot.get_sticker_set(reply_message.sticker.set_name)
         for sticker in sticker_set.stickers:
             db_manager.add_to_quote_db(content.Message("sticker", sticker.file_id))
+        sentiment_messages.add_stickers_sentiment(sticker_set.stickers)
         update_phrases()
         bot.reply_to(message, "The sticker pack has been successfully added")
     else:
