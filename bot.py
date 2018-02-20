@@ -15,7 +15,7 @@ bot = telebot.TeleBot(config.bot_token)
 
 debug_mode = False
 
-phrases = content.messages + db_manager.get_quote_db_list()
+phrases = db_manager.get_quote_db_list()
 say_probability = 0.04
 chat_phrases = {}
 
@@ -30,7 +30,7 @@ def fill_phrases():
 
 def update_phrases():
     global phrases
-    phrases = content.messages + db_manager.get_quote_db_list()
+    phrases = db_manager.get_quote_db_list()
     global chat_phrases
     for p in chat_phrases:
         p = fill_phrases()
