@@ -15,7 +15,6 @@ def add_to_quote_db(item):
         set_quote_db()
     quote_db = shelve.open(db_path)
     list = quote_db['list']
-    print(list)
     for i in list:
         if i.value == item.value:
             quote_db.close()

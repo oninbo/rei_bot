@@ -1,6 +1,6 @@
 .idea
-src/config.py
-data/logs
-data/quote_db
-data/sentiment/*.json
-!data/sentiment/emoji.json
+/src/config.py
+/data/logs
+/data/quote_db
+/data/sentiment/*.json
+!/data/sentiment/emoji.json
