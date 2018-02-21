@@ -66,6 +66,7 @@ sentiments = sorted(list(messages.keys()))
 
 def update_messages():
     global stickers_sentiment, messages, sentiments
+
     stickers_sentiment = json.load(open(stickers_path))
 
     for s, v in stickers_sentiment.items():

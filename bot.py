@@ -110,10 +110,11 @@ def get_greeting(name, key):
 
 @bot.message_handler(commands=['ask'])
 def ping(message):
-    if message.reply_to_message:
-        reply(message.reply_to_message)
-    else:
-        reply(message)
+    if message.chat.type == 'private' or check_mention(message):
+        if message.reply_to_message:
+            reply(message.reply_to_message)
+        else:
+            reply(message)
 
 
 @bot.message_handler(commands=['night'])
