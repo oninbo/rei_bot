@@ -69,6 +69,8 @@ def update_messages():
 
     stickers_sentiment = json.load(open(stickers_path))
 
+    messages = {}
+
     for s, v in stickers_sentiment.items():
         if v not in messages.keys():
             messages[v] = []
@@ -134,6 +136,7 @@ def add_stickers_sentiment(stickers):
     with open(stickers_path, 'w') as f:
         f.write(json.dumps(stickers_sentiment, indent=4))
     f.closed
+    update_messages()
 
 
 def delete_sticker(sticker):
