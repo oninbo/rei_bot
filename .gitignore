@@ -1,4 +1,5 @@
 .idea
+__pycache__
 /src/config.py
 /data/logs
 /data/quote_db

@@ -40,8 +40,8 @@ def delete_stickers(stickers):
     update_phrases()
 
 
-def check_reply(message):
-    return message.reply_to_message and message.reply_to_message.from_user.username == TeleBot.get_me().username
+def check_reply(username, message):
+    return message.reply_to_message and message.reply_to_message.from_user.username == username
 
 
 def check_mention(username, message):
