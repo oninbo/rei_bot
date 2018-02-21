@@ -2,5 +2,5 @@
 src/config.py
 data/logs
 data/quote_db
-data/phrases.json
-data/stickers.json
+data/sentiment/phrases.json
+data/sentiment/stickers.json
