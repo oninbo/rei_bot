@@ -64,6 +64,18 @@ for s, v in stickers_sentiment.items():
 sentiments = sorted(list(messages.keys()))
 
 
+def update_messages():
+    global stickers_sentiment, messages, sentiments
+    stickers_sentiment = json.load(open(stickers_path))
+
+    for s, v in stickers_sentiment.items():
+        if v not in messages.keys():
+            messages[v] = []
+        messages[v].append(Message("sticker", s))
+
+    sentiments = sorted(list(messages.keys()))
+
+
 def get_message(text):
     global mood_value
     try:
@@ -85,7 +97,8 @@ def sentiment_from_text(text):
     emojis = re.findall(emoji.get_emoji_regexp(), text)
     text_sentiment = 0
     for e in emojis:
-        text_sentiment += emoji_sentiment[e]
+        if e in emoji_sentiment.keys():
+            text_sentiment += emoji_sentiment[e]
     is_original = random.choices([True, False], weights=language_proportions)[0]
     if not is_original:
         text = translator.translate(text)
@@ -129,3 +142,4 @@ def delete_sticker(sticker):
     with open(stickers_path, 'w') as f:
         f.write(json.dumps(stickers_sentiment, indent=4))
     f.closed
+    update_messages()
