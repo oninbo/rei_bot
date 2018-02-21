@@ -78,15 +78,9 @@ def set_debug(message):
     bot.send_message(config.creator_id, notification)
 
 
-def get_greeting(name, key):
-    greeting = copy.deepcopy(content.greetings[key])
-    greeting.value += name
-    return greeting
-
-
 @bot.message_handler(commands=['ask'])
 def ping(message):
-    if message.chat.type == 'private' or check_mention(message):
+    if message.chat.type == 'private' or check_mention(bot.get_me().username, message):
         if message.reply_to_message:
             reply(bot, message.reply_to_message)
         else:
@@ -115,7 +109,7 @@ def say_good_morning(message):
 
 @bot.message_handler(func=lambda message: True, content_types=['text'])
 def reply_default_message(message):
-    if check_mention(message) or check_reply(message):
+    if check_mention(bot.get_me().username, message) or check_reply(message):
         reply(bot, message)
     elif message.chat.type == 'private':
         if (debug_mode and message.chat.id == config.creator_id) or check_question(message.text):

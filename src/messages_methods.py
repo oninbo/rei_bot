@@ -44,11 +44,11 @@ def check_reply(message):
     return message.reply_to_message and message.reply_to_message.from_user.username == TeleBot.get_me().username
 
 
-def check_mention(message):
+def check_mention(username, message):
     if message.entities:
         for e in message.entities:
-            if e.type == "mention" and message.text[e.offset+1:e.offset+e.length] == TeleBot.get_me().username:
-                return True
+            mention_text = message.text[e.offset:e.offset+e.length]
+            return len(re.findall(username, mention_text)) > 0
     return False
 
 
@@ -114,3 +114,7 @@ def get_message(message):
     return message
 
 
+def get_greeting(name, key):
+    greeting = copy.deepcopy(content.greetings[key])
+    greeting.value += name
+    return greeting
