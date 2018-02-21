@@ -139,10 +139,11 @@ def add_stickers_sentiment(stickers):
     update_messages()
 
 
-def delete_sticker(sticker):
+def delete_stickers(stickers):
     global stickers_sentiment
-    if sticker.file_id in stickers_sentiment:
-        del stickers_sentiment[sticker.file_id]
+    for sticker in stickers:
+        if sticker.file_id in stickers_sentiment:
+            del stickers_sentiment[sticker.file_id]
     with open(stickers_path, 'w') as f:
         f.write(json.dumps(stickers_sentiment, indent=4))
     f.closed
