@@ -81,7 +81,8 @@ def say(bot, message, message_to_say=None):
     logger.info(message)
     if message_to_say == None:
         message_to_say = get_message(message)
-    send_functions[message_to_say.message_type](bot, message.chat.id, message_to_say.value)
+    if message_to_say != None:
+        send_functions[message_to_say.message_type](bot, message.chat.id, message_to_say.value)
 
 
 def reply(bot, message, text=None):
@@ -90,7 +91,8 @@ def reply(bot, message, text=None):
         send_functions[message.message_type](bot, message.chat.id, text, reply_to_message_id=message.message_id)
     else:
         message_to_say = get_message(message)
-        send_functions[message_to_say.message_type](bot, message.chat.id, message_to_say.value, reply_to_message_id=message.message_id)
+        if message_to_say != None:
+            send_functions[message_to_say.message_type](bot, message.chat.id, message_to_say.value, reply_to_message_id=message.message_id)
 
 
 def set_probability(value):
@@ -110,7 +112,10 @@ def get_message(message):
         chat_phrases[chat_id] = []
     if len(chat_phrases[chat_id]) == 0:
         chat_phrases[chat_id] = fill_phrases()
-    message = chat_phrases[chat_id].pop()
+    if len(chat_phrases[chat_id]) > 0:
+        message = chat_phrases[chat_id].pop()
+    else:
+        return None
     return message
 
 
