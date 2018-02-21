@@ -93,7 +93,10 @@ def get_message(text):
     except Exception as e:
         logger.exception(e)
         return None
-    return random.choice(messages[result_sentiment])
+    if len(messages) > 0:
+        return random.choice(messages[result_sentiment])
+    else:
+        return None
 
 
 def sentiment_from_text(text):
@@ -123,7 +126,7 @@ def chose_message(sentiment):
             else:
                 result_sentiment = sentiments[i - 1]
                 break
-    if result_sentiment is None:
+    if result_sentiment is None and len(sentiments) > 0:
         result_sentiment = sentiments[-1]
     return result_sentiment
 
