@@ -45,7 +45,7 @@ def check_reply(username, message):
 
 
 def check_mention(username, message):
-    if message.entities:
+    if message.content_type == 'text' and message.entities:
         for e in message.entities:
             mention_text = message.text[e.offset:e.offset+e.length]
             return len(re.findall(username, mention_text)) > 0
@@ -85,10 +85,10 @@ def say(bot, message, message_to_say=None):
         send_functions[message_to_say.message_type](bot, message.chat.id, message_to_say.value)
 
 
-def reply(bot, message, text=None):
+def reply(bot, message, message_to_say=None):
     logger.info(message)
-    if text:
-        send_functions[message.message_type](bot, message.chat.id, text, reply_to_message_id=message.message_id)
+    if message_to_say:
+        send_functions[message_to_say.message_type](bot, message.chat.id, message_to_say.value, reply_to_message_id=message.message_id)
     else:
         message_to_say = get_message(message)
         if message_to_say != None:

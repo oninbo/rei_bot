@@ -102,6 +102,8 @@ def get_message(text):
     try:
         if len(text) > 0:
             text_sentiment = sentiment_from_text(text)
+            if text_sentiment == None:
+                return None
             total_sentiment = (sentiment_from_mood['sentiment'] * text_sentiment + sentiment_from_mood['mood'] * mood_value) / sentiment_from_mood['sum']
             logger.debug(['total sentiment', total_sentiment])
             result_sentiment = chose_message(total_sentiment)
@@ -144,7 +146,7 @@ def sentiment_from_text(text):
     logger.debug([text, text_translated, text_sentiment])
 
     if text_sentiment == 0:  # if failed to compute sentiment
-        text_sentiment += 0.5
+        return None
 
     return text_sentiment
 
