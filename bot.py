@@ -91,44 +91,33 @@ def ping(message):
 
 @bot.message_handler(commands=['night'])
 def say_good_night(message):
-    say(bot, message, get_greeting(message.from_user.first_name, 'night'))
+    reply(bot, message, get_greeting(message.from_user.first_name, 'night'))
 
 
 @bot.message_handler(commands=['morning'])
 def say_good_morning(message):
-    say(bot, message, get_greeting(message.from_user.first_name, 'morning'))
+    reply(bot, message, get_greeting(message.from_user.first_name, 'morning'))
 
 
 @bot.message_handler(commands=['hi'])
 def say_good_morning(message):
-    say(bot, message, get_greeting(message.from_user.first_name, 'hi'))
+    reply(bot, message, get_greeting(message.from_user.first_name, 'hi'))
 
 
 @bot.message_handler(commands=['happy_ny'])
 def say_good_morning(message):
-    say(bot, message, get_greeting(message.from_user.first_name, 'happy_ny'))
+    reply(bot, message, get_greeting(message.from_user.first_name, 'happy_ny'))
 
 
-@bot.message_handler(func=lambda message: True, content_types=['text'])
+@bot.message_handler(func=lambda message: True, content_types=['text', 'sticker'])
 def reply_text_message(message):
     if check_mention(bot.get_me().username, message) or check_reply(bot.get_me().username, message):
         reply(bot, message)
     elif message.chat.type == 'private':
-        if (debug_mode and message.chat.id == config.creator_id) or check_question(message.text):
-            say(bot, message)
-    if to_say():
-        say(bot, message)
-
-
-@bot.message_handler(func=lambda message: True, content_types=['sticker'])
-def reply_sticker_message(message):
-    if check_reply(bot.get_me().username, message):
+        if (debug_mode and message.chat.id == config.creator_id) or message.content_type == 'text' and check_question(message.text):
+            reply(bot, message)
+    elif to_say():
         reply(bot, message)
-    elif message.chat.type == 'private':
-        if debug_mode and message.chat.id == config.creator_id:
-            say(bot, message)
-    if random.choices([True, False], weights=[say_probability, 1 - say_probability])[0]:
-        say(bot, message)
 
 
 @bot.message_handler(func=lambda message: True, content_types=['new_chat_members'])
