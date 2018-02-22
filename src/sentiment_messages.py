@@ -13,13 +13,30 @@ random.seed(int(time.time()))
 
 language_proportions = []
 
-mood_value = 0.5
+mood_value = 0.7
+
+
+sentiment_from_mood = {
+    'sentiment': 8,
+    'mood': 5
+}
+sentiment_from_mood['sum'] = sentiment_from_mood['sentiment'] + sentiment_from_mood['mood']
+
+logger.debug(['sentiment from mood', sentiment_from_mood])
+
+mood_from_sentiment = {
+    'mood': 9,
+    'sentiment': 3
+}
+mood_from_sentiment['sum'] = mood_from_sentiment['sentiment'] + mood_from_sentiment['mood']
+
+logger.debug(['mood from sentiment', mood_from_sentiment])
 
 
 def set_language_proportions():
     global language_proportions
     language_proportions = [
-        0#random.random(),  # original messages
+        0,#random.random(),  # original messages
         1#random.random()  # English messages
     ]
 
@@ -85,10 +102,10 @@ def get_message(text):
     try:
         if len(text) > 0:
             text_sentiment = sentiment_from_text(text)
-            total_sentiment = (6 * text_sentiment + 4 * mood_value) / 10
+            total_sentiment = (sentiment_from_mood['sentiment'] * text_sentiment + sentiment_from_mood['mood'] * mood_value) / sentiment_from_mood['sum']
             logger.debug(['total sentiment', total_sentiment])
             result_sentiment = chose_message(total_sentiment)
-            set_mood((2 * text_sentiment + 16 * mood_value) / 18)
+            set_mood((mood_from_sentiment['sentiment'] * text_sentiment + mood_from_sentiment['mood'] * mood_value) / mood_from_sentiment['sum'])
         else:
             result_sentiment = chose_message(mood_value)
     except Exception as e:
