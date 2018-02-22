@@ -87,7 +87,7 @@ def get_message(text):
             total_sentiment = (6 * text_sentiment + 4 * mood_value) / 10
             logger.debug(['total sentiment', total_sentiment])
             result_sentiment = chose_message(total_sentiment)
-            set_mood((2 * text_sentiment + 8 * mood_value) / 10)
+            set_mood((2 * text_sentiment + 16 * mood_value) / 18)
         else:
             result_sentiment = chose_message(mood_value)
     except Exception as e:

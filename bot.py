@@ -139,7 +139,7 @@ if __name__ == '__main__':
         try:
             alive_notify()
             sentiment_messages.set_language_proportions()
-            sentiment_messages.set_mood()
+            #sentiment_messages.set_mood()
             set_probability(sentiment_messages.mood_value)
             bot.polling(none_stop=True, interval=15)
         except BaseException as e:
