@@ -120,7 +120,7 @@ def sentiment_from_text(text):
                 text_sentiment += indicoio.sentiment(text_translated)
             else:
                 text_sentiment += indicoio.sentiment(text_emoji_free)
-            if len(emojis) > 0:
+            if emojis_sentiment > 0:
                 text_sentiment /= 2
         except Exception as e:
             print(e)
