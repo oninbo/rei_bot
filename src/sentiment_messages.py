@@ -7,6 +7,7 @@ import time
 import src.translator as translator
 from src.logger import logger
 import emoji, re
+from string import printable
 
 random.seed(int(time.time()))
 
@@ -84,7 +85,7 @@ def get_message(text):
     try:
         if len(text) > 0:
             text_sentiment = sentiment_from_text(text)
-            total_sentiment = (6 * text_sentiment + 4 * mood_value) / 10
+            total_sentiment = (8 * text_sentiment + 2 * mood_value) / 10
             logger.debug(['total sentiment', total_sentiment])
             result_sentiment = chose_message(total_sentiment)
             set_mood((2 * text_sentiment + 16 * mood_value) / 18)
@@ -100,19 +101,56 @@ def get_message(text):
 
 
 def sentiment_from_text(text):
-    emojis = re.findall(emoji.get_emoji_regexp(), text)
     text_sentiment = 0
-    for e in emojis:
-        if e in emoji_sentiment.keys():
-            text_sentiment += emoji_sentiment[e]
-    is_original = random.choices([True, False], weights=language_proportions)[0]
-    if not is_original:
-        text = translator.translate(text)
-    text_sentiment += indicoio.sentiment(text)
-    text_sentiment /= len(emojis)+1
-    logger.debug([text, text_sentiment])
+
+    emojis = re.findall(emoji.get_emoji_regexp(), text)
+    emojis_sentiment = sentiment_from_emojis(emojis)
+    logger.debug('emoji sentiment: ' + str(emojis_sentiment))
+    text_sentiment += emojis_sentiment
+
+    text_translated = text
+    text_emoji_free = remove_redundant_symbols(text)
+    logger.debug('text without emoji: ' + text_emoji_free)
+
+    if len(text_emoji_free) > 0:
+        is_original = random.choices([True, False], weights=language_proportions)[0]
+        try:
+            if not is_original:
+                text_translated = translator.translate(text_emoji_free)
+                text_sentiment += indicoio.sentiment(text_translated)
+            else:
+                text_sentiment += indicoio.sentiment(text_emoji_free)
+            if len(emojis) > 0:
+                text_sentiment /= 2
+        except Exception as e:
+            print(e)
+    logger.debug([text, text_translated, text_sentiment])
+
+    if text_sentiment == 0:  # if failed to compute sentiment
+        text_sentiment += 0.5
 
     return text_sentiment
+
+
+def remove_redundant_symbols(string):  # not really nice function
+    symbols = re.findall('[\w\s]', string)
+    symbols += list(printable)
+    for c in string:
+        if c not in symbols:
+            string = string.replace(c, '')
+    return string
+
+
+def sentiment_from_emojis(emojis):
+    sentiment = 0
+    emoji_number = 0
+    for e in emojis:
+        if e in emoji_sentiment.keys():
+            emoji_number += 1
+            sentiment += emoji_sentiment[e]
+    if emoji_number > 0:
+        sentiment /= emoji_number
+    return sentiment
 
 
 def chose_message(sentiment):

@@ -9,6 +9,8 @@ telebot.logger.setLevel(INFO)
 
 bot = telebot.TeleBot(config.bot_token)
 
+polling_interval = 15
+
 
 @bot.message_handler(commands=['add_sticker'])
 def add_sticker_handler(message):
@@ -108,11 +110,22 @@ def say_good_morning(message):
 
 
 @bot.message_handler(func=lambda message: True, content_types=['text'])
-def reply_default_message(message):
+def reply_text_message(message):
     if check_mention(bot.get_me().username, message) or check_reply(bot.get_me().username, message):
         reply(bot, message)
     elif message.chat.type == 'private':
         if (debug_mode and message.chat.id == config.creator_id) or check_question(message.text):
+            say(bot, message)
+    if random.choices([True, False], weights=[say_probability, 1 - say_probability])[0]:
+        say(bot, message)
+
+
+@bot.message_handler(func=lambda message: True, content_types=['sticker'])
+def reply_sticker_message(message):
+    if check_reply(bot.get_me().username, message):
+        reply(bot, message)
+    elif message.chat.type == 'private':
+        if debug_mode and message.chat.id == config.creator_id:
             say(bot, message)
     if random.choices([True, False], weights=[say_probability, 1 - say_probability])[0]:
         say(bot, message)
@@ -139,9 +152,8 @@ if __name__ == '__main__':
         try:
             alive_notify()
             sentiment_messages.set_language_proportions()
-            #sentiment_messages.set_mood()
             set_probability(sentiment_messages.mood_value)
-            bot.polling(none_stop=True, interval=15)
+            bot.polling(none_stop=True, interval=polling_interval)
         except BaseException as e:
             logger.exception(e)
             try:

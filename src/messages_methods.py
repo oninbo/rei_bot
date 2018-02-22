@@ -79,9 +79,9 @@ send_functions["photo"] = TeleBot.send_photo
 
 def say(bot, message, message_to_say=None):
     logger.info(message)
-    if message_to_say == None:
+    if not message_to_say:
         message_to_say = get_message(message)
-    if message_to_say != None:
+    if message_to_say:
         send_functions[message_to_say.message_type](bot, message.chat.id, message_to_say.value)
 
 
@@ -103,7 +103,9 @@ def set_probability(value):
 def get_message(message):
     if message.content_type == 'text':
         sentiment_message = sentiment_messages.get_message(remove_mentions(remove_commands(message.text)))
-        if sentiment_message is not None:
+    elif message.content_type == 'sticker':
+        sentiment_message = sentiment_messages.get_message(message.sticker.emoji)
+    if sentiment_message is not None:
             logger.info('sentimental')
             set_probability(sentiment_messages.mood_value)
             return sentiment_message
