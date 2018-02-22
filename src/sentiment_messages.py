@@ -19,8 +19,8 @@ mood_value = 0.5
 def set_language_proportions():
     global language_proportions
     language_proportions = [
-        random.random(),  # original messages
-        random.random()  # English messages
+        0#random.random(),  # original messages
+        1#random.random()  # English messages
     ]
 
     logger.info(["language proportions", language_proportions])
@@ -85,7 +85,7 @@ def get_message(text):
     try:
         if len(text) > 0:
             text_sentiment = sentiment_from_text(text)
-            total_sentiment = (8 * text_sentiment + 2 * mood_value) / 10
+            total_sentiment = (6 * text_sentiment + 4 * mood_value) / 10
             logger.debug(['total sentiment', total_sentiment])
             result_sentiment = chose_message(total_sentiment)
             set_mood((2 * text_sentiment + 16 * mood_value) / 18)
