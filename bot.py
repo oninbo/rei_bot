@@ -116,7 +116,7 @@ def reply_text_message(message):
     elif message.chat.type == 'private':
         if (debug_mode and message.chat.id == config.creator_id) or check_question(message.text):
             say(bot, message)
-    if random.choices([True, False], weights=[say_probability, 1 - say_probability])[0]:
+    if to_say():
         say(bot, message)
 
 

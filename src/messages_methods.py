@@ -6,7 +6,7 @@ from telebot import TeleBot
 debug_mode = False
 
 phrases = db_manager.get_quote_db_list()
-say_probability = 0.04
+say_probability = 0.5
 chat_phrases = {}
 
 
@@ -119,6 +119,10 @@ def get_message(message):
     else:
         return None
     return message
+
+
+def to_say():
+    return random.choices([True, False], weights=[say_probability, 1 - say_probability])[0]
 
 
 def get_greeting(name, key):
