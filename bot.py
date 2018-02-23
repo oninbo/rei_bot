@@ -110,7 +110,7 @@ def say_good_morning(message):
 
 
 @bot.message_handler(func=lambda message: True, content_types=['text', 'sticker'])
-def reply_text_message(message):
+def reply_message(message):
     if check_mention(bot.get_me().username, message) or check_reply(bot.get_me().username, message):
         reply(bot, message)
     elif message.chat.type == 'private':

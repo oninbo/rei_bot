@@ -146,7 +146,7 @@ def sentiment_from_text(text):
     logger.debug([text, text_translated, text_sentiment])
 
     if text_sentiment == 0:  # if failed to compute sentiment
-        return None
+        return 0.5
 
     return text_sentiment
 
