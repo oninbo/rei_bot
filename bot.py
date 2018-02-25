@@ -3,6 +3,7 @@ from src import config
 from src.logger import fh, log_file
 from logging import INFO
 from src.messages_methods import *
+import src.google_ai as ai
 
 telebot.logger.addHandler(fh)
 telebot.logger.setLevel(INFO)
@@ -111,6 +112,10 @@ def say_good_morning(message):
 
 @bot.message_handler(func=lambda message: True, content_types=['text', 'sticker'])
 def reply_message(message):
+    if message.content_type == 'text':
+        ai_message = ai.get_message(message.text)
+        if ai_message:
+            reply(bot, message, message_to_say=ai_message)
     if check_mention(bot.get_me().username, message) or check_reply(bot.get_me().username, message):
         reply(bot, message)
     elif message.chat.type == 'private':
@@ -149,5 +154,5 @@ if __name__ == '__main__':
                 death_notify()
             except:
                 pass
-        logger.debug('wait for 10 seconds')
-        time.sleep(10)
+        logger.debug('wait for 30 seconds')
+        time.sleep(30)
