@@ -78,6 +78,7 @@ send_functions["photo"] = TeleBot.send_photo
 
 
 def say(bot, message, message_to_say=None):
+    bot.send_chat_action(message.chat.id, 'typing')
     logger.info(message)
     if not message_to_say:
         message_to_say = get_message(message)
@@ -86,6 +87,7 @@ def say(bot, message, message_to_say=None):
 
 
 def reply(bot, message, message_to_say=None):
+    bot.send_chat_action(message.chat.id, 'typing')
     logger.info(message)
     if message_to_say:
         send_functions[message_to_say.message_type](bot, message.chat.id, message_to_say.value, reply_to_message_id=message.message_id)
