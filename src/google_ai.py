@@ -16,7 +16,7 @@ def get_message(text):
     response = json.loads(request.getresponse().read())
     result_text = response['result']['fulfillment']['speech']
 
-    if result_text:
+    if result_text and result_text != 'None':
         return Message('text', result_text)
     else:
-        return result_text
+        return None
