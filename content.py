@@ -4,8 +4,6 @@ class Message:
         self.value = value
 
 
-
-
 greetings = {
     "morning": Message("text", "Доброе утро, "),
     "night": Message("text", "Спокойной ночи, "),

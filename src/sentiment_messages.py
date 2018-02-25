@@ -59,15 +59,14 @@ messages = {} # {sentiment_value: Message,...}
 
 emoji_sentiment = json.load(open("data/sentiment/emoji.json"))
 
-# TODO: use text messages only in case of keyword search
-"""
+
 phrases_sentiment = json.load(open("data/sentiment/phrases.json")) 
 
 for s, v in phrases_sentiment.items():
     if v not in messages:
         messages[v] = []
     messages[v].append(Message("text", s))
-"""
+
 
 stickers_path = "data/sentiment/stickers.json"
 
