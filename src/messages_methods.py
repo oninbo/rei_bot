@@ -77,24 +77,18 @@ send_functions["video"] = TeleBot.send_video
 send_functions["photo"] = TeleBot.send_photo
 
 
-def say(bot, message, message_to_say=None):
+def say(bot, message, message_to_say=None, reply=None):
     bot.send_chat_action(message.chat.id, 'typing')
+    time.sleep(3)
     logger.info(message)
     if not message_to_say:
         message_to_say = get_message(message)
     if message_to_say:
-        send_functions[message_to_say.message_type](bot, message.chat.id, message_to_say.value)
+        send_functions[message_to_say.message_type](bot, message.chat.id, message_to_say.value, reply_to_message_id=reply)
 
 
 def reply(bot, message, message_to_say=None):
-    bot.send_chat_action(message.chat.id, 'typing')
-    logger.info(message)
-    if message_to_say:
-        send_functions[message_to_say.message_type](bot, message.chat.id, message_to_say.value, reply_to_message_id=message.message_id)
-    else:
-        message_to_say = get_message(message)
-        if message_to_say != None:
-            send_functions[message_to_say.message_type](bot, message.chat.id, message_to_say.value, reply_to_message_id=message.message_id)
+    say(bot, message, message_to_say=message_to_say, reply=message.message_id)
 
 
 def set_probability(value):
