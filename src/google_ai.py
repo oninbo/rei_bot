@@ -17,7 +17,9 @@ def get_message(text):
     if 'result' in response.keys():
         result_text = response['result']['fulfillment']['speech']
 
-    if result_text and result_text != 'None':
-        return Message('text', result_text)
+        if result_text and result_text != 'None':
+            return Message('text', result_text)
+        else:
+            return None
     else:
         return None
