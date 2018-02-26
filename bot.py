@@ -142,7 +142,7 @@ def alive_notify():
 
 def launch():
     wait_time = 10
-    error_interval = 10000
+    error_interval = None
     error_time = None
     while True:
         logger.debug('trying to connect')
@@ -153,11 +153,9 @@ def launch():
             bot.polling(none_stop=True, interval=polling_interval)
         except BaseException as e:
             logger.exception(e)
-            if error_time:
-                if time.localtime() - error_time < error_interval:
-                    wait_time = wait_time*2
-                else:
-                    wait_time = wait_time/2
+            if error_time and error_interval:
+                wait_time = (time.time() - error_time)/error_interval*wait_time
+            error_interval = time.localtime() - error_time
             error_time = time.localtime()
 
             try:
