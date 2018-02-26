@@ -142,7 +142,7 @@ def alive_notify():
 
 def launch():
     wait_time = 10
-    error_interval = 10
+    error_interval = 100
     error_time = None
     while True:
         logger.debug('trying to connect')
