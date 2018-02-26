@@ -140,7 +140,9 @@ def alive_notify():
     bot.send_message(config.creator_id, "Looks like I'm alive now")
 
 
-if __name__ == '__main__':
+def launch():
+    wait_time = 10
+    error_time = None
     while True:
         logger.debug('trying to connect')
         try:
@@ -150,9 +152,20 @@ if __name__ == '__main__':
             bot.polling(none_stop=True, interval=polling_interval)
         except BaseException as e:
             logger.exception(e)
+            if error_time:
+                if time.time() - error_time < wait_time*2:
+                    wait_time = wait_time*2
+                else:
+                    wait_time = wait_time/2
+            error_time = time.time()
+
             try:
                 death_notify()
             except:
                 pass
-        logger.debug('wait for 30 seconds')
-        time.sleep(30)
+        logger.debug('wait for '+ str(wait_time) + ' seconds')
+        time.sleep(wait_time)
+
+
+if __name__ == '__main__':
+    launch()
