@@ -142,7 +142,7 @@ def alive_notify():
 
 def launch():
     wait_time = 10
-    error_interval = 100
+    error_interval = 10000
     error_time = None
     while True:
         logger.debug('trying to connect')
@@ -154,17 +154,17 @@ def launch():
         except BaseException as e:
             logger.exception(e)
             if error_time:
-                if time.time() - error_time < error_interval:
+                if time.localtime() - error_time < error_interval:
                     wait_time = wait_time*2
                 else:
                     wait_time = wait_time/2
-            error_time = time.time()
+            error_time = time.localtime()
 
             try:
                 death_notify()
             except:
                 pass
-        logger.debug('wait for '+ str(wait_time) + ' seconds')
+        logger.debug('wait for ' + str(wait_time) + ' seconds')
         time.sleep(wait_time)
 
 
