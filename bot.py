@@ -155,7 +155,7 @@ def launch():
             logger.exception(e)
             if error_time:
                 if error_interval:
-                    wait_time = (time.time() - error_time)/error_interval*wait_time
+                    wait_time = error_interval/(time.time() - error_time)*wait_time
                 error_interval = time.time() - error_time
             error_time = time.time()
 
