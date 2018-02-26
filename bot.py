@@ -153,9 +153,10 @@ def launch():
             bot.polling(none_stop=True, interval=polling_interval)
         except BaseException as e:
             logger.exception(e)
-            if error_time and error_interval:
-                wait_time = (time.time() - error_time)/error_interval*wait_time
-            error_interval = time.time() - error_time
+            if error_time:
+                if error_interval:
+                    wait_time = (time.time() - error_time)/error_interval*wait_time
+                error_interval = time.time() - error_time
             error_time = time.time()
 
             try:
