@@ -13,7 +13,7 @@ def get_message(text):
 
     request.lang = 'ru'
 
-    response = json.loads(request.getresponse().read())
+    response = json.loads(request.getresponse().read().decode('utf-8'))
     if 'result' in response.keys():
         result_text = response['result']['fulfillment']['speech']
 
